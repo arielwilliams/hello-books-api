@@ -16,19 +16,42 @@ def create_book():
 
     return make_response(f"Book {new_book.title} successfully created", 201)
 
-# reads/gets all books
+# # reads/gets all books
+# @books_bp.route("", methods=["GET"])
+# def read_all_books():
+#     books_response = []
+#     books = Book.query.all()
+#     for book in books:
+#         books_response.append(
+#             {
+#                 "id": book.id,
+#                 "title": book.title,
+#                 "description": book.description
+#             }
+#         )
+#     return jsonify(books_response)
+
+
+# refactored reads/gets all books to include quary param
 @books_bp.route("", methods=["GET"])
 def read_all_books():
+
+    # this code replaces the previous query all code
+    title_query = request.args.get("title")
+    if title_query:
+        books = Book.query.filter_by(title=title_query)
+    else:
+        books = Book.query.all()
+    # end of the new code
+
     books_response = []
-    books = Book.query.all()
     for book in books:
-        books_response.append(
-            {
-                "id": book.id,
-                "title": book.title,
-                "description": book.description
-            }
-        )
+        books_response.append({
+            "id": book.id,
+            "title": book.title,
+            "description": book.description
+        })
+
     return jsonify(books_response)
 
 
