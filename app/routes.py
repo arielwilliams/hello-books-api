@@ -38,7 +38,8 @@ def create_book():
     # return make_response("I'm a teapot!", 418)
 
 
-# refactored reads/gets all books to include query param title
+# refactored reads/gets all books to include query param title 
+# uses helper function to_dict() from book.py
 @books_bp.route("", methods=["GET"])
 def read_all_books():
     title_query = request.args.get("title")
@@ -49,15 +50,8 @@ def read_all_books():
 
     books_response = []
     for book in books:
-        books_response.append({
-            "id": book.id,
-            "title": book.title,
-            "description": book.description
-        })
-
-    return jsonify(books_response), 200 
-    # return statement below to make our tests fail
-    # return make_response("I'm a teapot!", 418)
+        books_response.append(book.to_dict())
+    return jsonify(books_response)
 
 
 # reads/gets specific existing book, if it does not exist returns 400 or 404
