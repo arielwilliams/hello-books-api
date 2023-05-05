@@ -55,14 +55,11 @@ def read_all_books():
 
 
 # reads/gets specific existing book, if it does not exist returns 400 or 404
+# uses helper function to_dict() from book.py
 @books_bp.route("/<book_id>", methods=["GET"])
 def read_one_book(book_id):
     book = validate_book(book_id)
-    return {
-            "id": book.id,
-            "title": book.title,
-            "description": book.description
-        }
+    return book.to_dict()
 
 
 # puts/updates specific existing book, if it does not exist returns 400 or 404
