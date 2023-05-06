@@ -36,21 +36,6 @@ def create_book():
 
 
 
-# # creates new book
-# @books_bp.route("", methods=["POST"])
-# def create_book():
-#     request_body = request.get_json()
-#     new_book = Book(title=request_body["title"],
-#                     description=request_body["description"])
-
-#     db.session.add(new_book)
-#     db.session.commit()
-
-#     return make_response(jsonify(f"Book {new_book.title} successfully created"), 201)
-#     # return statement below to make our tests fail
-#     # return make_response("I'm a teapot!", 418)
-
-
 # refactored reads/gets all books to include query param title 
 # uses helper function to_dict() from book.py
 @books_bp.route("", methods=["GET"])
