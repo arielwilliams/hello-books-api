@@ -23,19 +23,32 @@ def validate_book(book_id):
 
 ########## Routes here #########
 
-# creates new book
+# refactored function to create new book
 @books_bp.route("", methods=["POST"])
 def create_book():
     request_body = request.get_json()
-    new_book = Book(title=request_body["title"],
-                    description=request_body["description"])
+    new_book = Book.from_dict(request_body)
 
     db.session.add(new_book)
     db.session.commit()
 
     return make_response(jsonify(f"Book {new_book.title} successfully created"), 201)
-    # return statement below to make our tests fail
-    # return make_response("I'm a teapot!", 418)
+
+
+
+# # creates new book
+# @books_bp.route("", methods=["POST"])
+# def create_book():
+#     request_body = request.get_json()
+#     new_book = Book(title=request_body["title"],
+#                     description=request_body["description"])
+
+#     db.session.add(new_book)
+#     db.session.commit()
+
+#     return make_response(jsonify(f"Book {new_book.title} successfully created"), 201)
+#     # return statement below to make our tests fail
+#     # return make_response("I'm a teapot!", 418)
 
 
 # refactored reads/gets all books to include query param title 
@@ -51,7 +64,7 @@ def read_all_books():
     books_response = []
     for book in books:
         books_response.append(book.to_dict())
-    return jsonify(books_response)
+    return jsonify(books_response), 200
 
 
 # reads/gets specific existing book, if it does not exist returns 400 or 404
@@ -59,7 +72,7 @@ def read_all_books():
 @books_bp.route("/<book_id>", methods=["GET"])
 def read_one_book(book_id):
     book = validate_book(book_id)
-    return book.to_dict()
+    return book.to_dict(), 200 
 
 
 # puts/updates specific existing book, if it does not exist returns 400 or 404

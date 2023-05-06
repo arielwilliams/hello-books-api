@@ -16,3 +16,11 @@ class Book(db.Model):
         return book_as_dict
     
 
+    # class method, must pass in cls which is class and book_data
+    @classmethod
+    def from_dict(cls, book_data):
+        new_book = Book(
+            title=book_data["title"],
+            description=book_data["description"])
+        return new_book
+    
