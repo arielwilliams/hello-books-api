@@ -5,23 +5,25 @@ from app.models.book import Book
 books_bp = Blueprint("books", __name__, url_prefix="/books")
 
 ####### helper functions here #######
-# helper function for read_one_book() AND update_book() that returns 400 and 404 
-# messages if book does not exist; and if it does exist it returns the book
-def validate_book(book_id):
+# helper function to validate any model
+# currently being used to validate book model in read, update, and delete functions
+
+def validate_model(cls, model_id):
     try:
-        book_id = int(book_id)
+        model_id = int(model_id)
     except:
-        abort(make_response({"message":f"book {book_id} invalid"}, 400))
+        abort(make_response({"message":f"{cls.__name__} {model_id} invalid"}, 400))
 
-    book = Book.query.get(book_id)
+    model = cls.query.get(model_id)
 
-    if not book:
-        abort(make_response({"message":f"book {book_id} not found"}, 404))
+    if not model:
+        abort(make_response({"message":f"{cls.__name__} {model_id} not found"}, 404))
 
-    return book
+    return model
+
 ###############################################################################
 
-########## Routes here #########
+# Routes here 
 
 # refactored function to create new book
 @books_bp.route("", methods=["POST"])
@@ -33,7 +35,6 @@ def create_book():
     db.session.commit()
 
     return make_response(jsonify(f"Book {new_book.title} successfully created"), 201)
-
 
 
 # refactored reads/gets all books to include query param title 
@@ -56,14 +57,14 @@ def read_all_books():
 # uses helper function to_dict() from book.py
 @books_bp.route("/<book_id>", methods=["GET"])
 def read_one_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
     return book.to_dict(), 200 
 
 
 # puts/updates specific existing book, if it does not exist returns 400 or 404
 @books_bp.route("/<book_id>", methods=["PUT"])
 def update_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
 
     request_body = request.get_json()
 
@@ -72,16 +73,16 @@ def update_book(book_id):
 
     db.session.commit()
 
-    return make_response(jsonify(f"Book #{book.id} successfully updated"))
+    return make_response(jsonify(f"Book #{book.id} successfully updated"), 200)
 
 
 # deletes specific existing book, if it does not exist returns 400 or 404
 @books_bp.route("/<book_id>", methods=["DELETE"])
 def delete_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
 
     db.session.delete(book)
     db.session.commit()
 
-    return make_response(jsonify(f"Book #{book.id} successfully deleted"))
+    return make_response(jsonify(f"Book #{book.id} successfully deleted"), 200)
 
