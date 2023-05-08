@@ -1,8 +1,11 @@
 from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
 from app.models.book import Book
+from app.models.author import Author
 
+# Blueprints for books and authors 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
+authors_bp = Blueprint("authors_bp", __name__, url_prefix="/authors")
 
 ####### helper functions here #######
 # helper function to validate any model
@@ -23,7 +26,7 @@ def validate_model(cls, model_id):
 
 ###############################################################################
 
-# Routes here 
+# Routes for book here 
 
 # refactored function to create new book
 @books_bp.route("", methods=["POST"])
@@ -86,3 +89,29 @@ def delete_book(book_id):
 
     return make_response(jsonify(f"Book #{book.id} successfully deleted"), 200)
 
+################################################################################
+# Routes for author here 
+
+@authors_bp.route("", methods=["POST"])
+def create_author():
+    request_body = request.get_json()
+    new_author = Author(name=request_body["name"],)
+
+    db.session.add(new_author)
+    db.session.commit()
+
+    return make_response(jsonify(f"Author {new_author.name} successfully created"), 201)
+
+@authors_bp.route("", methods=["GET"])
+def read_all_authors():
+    
+    authors = Author.query.all()
+
+    authors_response = []
+    for author in authors:
+        authors_response.append(
+            {
+                "name": author.name
+            }
+        )
+    return jsonify(authors_response)

@@ -1,5 +1,7 @@
 from werkzeug.exceptions import HTTPException
 from app.routes import validate_model
+# import below from attempt to create separate routes file for book
+# from app.book_routes import validate_model
 from app.models.book import Book
 import pytest
 
